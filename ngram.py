@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+import dicttools
+
 class NGram():
 	"""Stores an n-gram model."""
 	def __init__(self, n = 1):
@@ -39,6 +41,17 @@ class NGram():
 		"""Resets the context. This shouldn't be necessary if finish_adding() is used."""
 		self.context = (None,) * self.n
 
+	def search(self, *words):
+		"""Find a list of words in the model."""
+		result = {}
+		for i in range(len(words) - self.n + 1):
+			dicttools.dunion_add(result, self.find_ngram(tuple(words[i:i+self.n]))) 
+		return result
+	
+	def find_ngram(self, tuple):
+		"""Find an n-gram in the model."""
+		return self.ngrams.get(tuple, {})
+
 	def debug(self):
 		"""Prints a crude representation for debug purposes."""
 		for k,v in self.ngrams.iteritems():
@@ -50,4 +63,12 @@ if __name__ == '__main__':
 	if len(sys.argv) > 1:
 		with open(sys.argv[1]) as f:
 			ngrams.read_file(f)
-	ngrams.debug()
+	# ngrams.debug()
+	try:
+		input = raw_input("Query> ")
+		while input:
+			print ngrams.search(*input.split())
+			input = raw_input("Query> ")
+	except EOFError:
+		pass
+	print
