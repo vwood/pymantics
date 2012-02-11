@@ -71,4 +71,6 @@ if __name__ == '__main__':
 			input = raw_input("Query> ")
 	except EOFError:
 		pass
+	except KeyboardInterupt:
+		pass
 	print
