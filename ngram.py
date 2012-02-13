@@ -77,18 +77,12 @@ class NGram():
 		"""Find an n-gram in the model."""
 		return self.ngrams.get(tuple, {})
 
-	def debug(self):
-		"""Prints a crude representation for debug purposes."""
-		for k,v in self.ngrams.iteritems():
-			print k, "->", v
-
 if __name__ == '__main__':
 	import sys
 	ngrams = NGram()
 	if len(sys.argv) > 1:
 		with open(sys.argv[1]) as f:
 			ngrams.read_file(f)
-	# ngrams.debug()
 	try:
 		input = raw_input("Query> ")
 		while input:
