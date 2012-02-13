@@ -21,6 +21,7 @@ class NGram():
 		self.ngrams = {}
 		self.n = n
 		self.reset_context()
+		self.ngram_count = 0
 
 	def read_file(self, file):
 		"""Reads n-grams in from a file."""
@@ -38,6 +39,7 @@ class NGram():
 				self.ngrams[self.context].get(word, 0) + 1
 		else:
 			self.ngrams[self.context] = {word:1}
+			self.ngram_count += 1
 		self.shift_context(word)
 
 	def finish_adding(self):
