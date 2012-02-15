@@ -23,7 +23,7 @@ class NGram():
 		self.reset_context()
 		self.ngram_count = 0
 
-	def read_file(self, file, ignore_chars = "[](),:=.-\"'", lowercase = True):
+	def read_file(self, file, ignore_chars = "[](),:=.-\"", lowercase = True, words = True):
 		"""Reads n-grams in from a file."""
 		self.reset_context()
 		for line in file:
@@ -31,7 +31,8 @@ class NGram():
 				line = line.lower()
 			for char in ignore_chars:
 				line = line.replace(char, " ")
-			line = line.split()
+			if words:
+				line = line.split()
 			for word in line:
 				self.add_word(word)
 		self.finish_adding()
