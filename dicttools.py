@@ -4,6 +4,18 @@
 # Functions for better dictionary usage
 #
 
+def weighted_random_selection(d):
+    """Randomly selects a key from a dictionary using the values as weights"""
+    total = 0
+    for value in d.itervalues():
+        total += value
+
+    selection = random.randint(0, total)
+    for key, value in d.iteritems():
+        selection -= value
+        if selection <= 0:
+            return key
+
 def union(dicta, dictb, join_fn):
     """Joins two dictionaries, (dicta and dictb) using join_fn to handle key collisions.
     The value of any pair of keys that collide is join_fn(v1, v2)"""

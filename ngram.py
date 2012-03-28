@@ -3,18 +3,6 @@
 import dicttools
 import random
 
-def weighted_random_selection(d):
-    """Randomly selects a key from a dictionary if the values are weights"""
-    total = 0
-    for value in d.itervalues():
-        total += value
-
-    selection = random.randint(0, total)
-    for key, value in d.iteritems():
-        selection -= value
-        if selection <= 0:
-            return key
-
 class NGram():
     """Stores an n-gram model."""
     def __init__(self, n = 1):
