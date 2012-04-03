@@ -108,9 +108,9 @@ class Bayes():
         return result
     
 if __name__ == '__main__':
-    print "Example using absent data values as missing (The default)"
-    # This implies each possible data value is part of an option type,
-    # At most one option occuring
+    print "Example using absent data values as missing (The default):"
+    print "This implies each possible data value is part of an option type,"
+    print "at most one option occuring."
     b = Bayes()
     b.train(['a'], "x", 5)
     b.train(['~a'], "x", 10)
@@ -120,8 +120,9 @@ if __name__ == '__main__':
     print b.classify(['a'])
     print b.classify(['~a'])
 
-    print "Example using absent data values as negative"
-    # This implies each possible data value is boolean (occurs or does not)
+    print "Example using absent data values as negative:"
+    print "This implies each possible data value is boolean (occurs or does not)"
+    print "Results should be the same as the previous example."
     b = Bayes()
     b.set_absent_is_missing(False)
     b.train(['a'], "x", 5)
@@ -132,7 +133,7 @@ if __name__ == '__main__':
     print b.classify(['a'])
     print b.classify([])
 
-    print "More complex example:"
+    print "A more complex example, using test data:"
     b = Bayes()
     b.set_absent_is_missing(True)
     b.train(['a', 'b'], "x", 100)
