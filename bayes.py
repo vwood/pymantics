@@ -8,16 +8,19 @@ class Bayes():
     """Data should be a set of terms."""
     def __init__(self):
         self.total_count = 0
-        
         # labels = {label: count}
         self.labels = {}
-        
         # data = {labels: {data : count}}
         self.label_data = {}
-
         self.data = set()
+        self.absent_is_missing = True
+
+    def set_absent_is_missing(self, value):
+        """"Should we treat absent values as missing values, or as Negative"""
+        self.absent_is_missing = value
 
     def train(self, data, label, count=1):
+        """Train the classifier on some data."""
         if not self.labels.has_key(label):
             self.labels[label] = 0
         self.labels[label] += count
@@ -70,25 +73,42 @@ class Bayes():
                 prob *= prob_label_and_item / label_prob
         return prob
 
-    def label_probability(self, data, label, absent_is_missing=True):
-        if absent_is_missing:
+    def label_probability(self, data, label):
+        """Main dispatch for getting the probability of a label."""
+        if self.absent_is_missing:
             return self.label_probability_absent_is_missing(data, label)
         else:
             return self.label_probability_absent_is_negative(data, label)
         
-    def classify(self, data, absent_is_missing=True):
+    def classify(self, data):
         max_prob = 0
         max_label = "default"
+        evidence = 0
         for label in self.labels:
-            label_prob = self.label_probability(data, label, absent_is_missing)
+            label_prob = self.label_probability(data, label)
+            evidence += label_prob
             if label_prob > max_prob:
                 max_label = label
                 max_prob = label_prob
-            print label, label_prob
-        return max_label, max_prob
+        return max_label, max_prob, evidence
 
+    def test(self, test_data):
+        """Perform a test against some test data.
+        Where the test_data is a [(data, label), ...]
+        Returns a {label: (correct, incorrect)}."""
+        result = {}
+        for data, label in test_data:
+            classified_as, _, _ = self.classify(data)
+            correct, incorrect = result.get(label, (0,0))
+            if classified_as == label:
+                correct += 1
+            else:
+                incorrect += 1
+            result[label] = (correct, incorrect)
+        return result
+    
 if __name__ == '__main__':
-    # Example using absent data values as missing (The default)
+    print "Example using absent data values as missing (The default)"
     # This implies each possible data value is part of an option type,
     # At most one option occuring
     b = Bayes()
@@ -97,16 +117,45 @@ if __name__ == '__main__':
     b.train(['a'], "y", 10)
     b.train(['~a'], "y", 5)
     
-    print b.classify(['a'], True)
-    print b.classify(['~a'], True)
+    print b.classify(['a'])
+    print b.classify(['~a'])
 
-    # Example using absent data values as negative
+    print "Example using absent data values as negative"
     # This implies each possible data value is boolean (occurs or does not)
     b = Bayes()
+    b.set_absent_is_missing(False)
     b.train(['a'], "x", 5)
     b.train([], "x", 10)
     b.train(['a'], "y", 10)
     b.train([], "y", 5)
     
-    print b.classify(['a'], False)
-    print b.classify([], False)
+    print b.classify(['a'])
+    print b.classify([])
+
+    print "More complex example:"
+    b = Bayes()
+    b.set_absent_is_missing(True)
+    b.train(['a', 'b'], "x", 100)
+    b.train(['~a', 'b'], "x", 90)
+    b.train(['a', '~b'], "x", 50)
+    b.train(['~a', '~b'], "x", 10)
+    b.train(['a', 'b'], "y", 5)
+    b.train(['~a', 'b'], "y", 10)
+    b.train(['a', '~b'], "y", 30)
+    b.train(['~a', '~b'], "y", 130)
+    print b.classify(['a', 'b'])
+    print b.classify(['a', '~b'])
+    print b.classify(['~a', 'b'])
+    print b.classify(['~a', '~b'])
+
+    print b.test([(['a','b'], 'x'),
+                  (['a','b'], 'x'),
+                  (['~a','b'], 'x'),
+                  (['~a','b'], 'x'),
+                  (['a','b'], 'x'),
+                  (['a','~b'], 'y'),
+                  (['a','~b'], 'y'),
+                  (['~a','~b'], 'y'),
+                  (['~a','~b'], 'y')])
+
+    
