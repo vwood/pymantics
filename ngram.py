@@ -38,8 +38,8 @@ class NGram():
     def finish_adding(self):
         """Adds the last context to the n-gram model.
         This resets the context."""
-        for i in range(len(self.context)):
-            self.add_word(None)
+        self.add_word(None)
+        self.reset_content()
 
     def shift_context(self, word):
         """Destructively updates the context to have word at the end."""
@@ -47,7 +47,7 @@ class NGram():
 
     def reset_context(self):
         """Resets the context. This shouldn't be necessary if finish_adding() is used."""
-        self.context = (None,) * self.n
+        self.context = ()
 
     def search(self, *words):
         """Find a list of words in the model."""
